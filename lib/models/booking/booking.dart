@@ -2,18 +2,27 @@ enum BookingStatus { reserved, active, completed, cancelled }
 
 class Booking {
   final String bookingId;
-  final DateTime reservedAt;
-  final DateTime startTime;
-  final DateTime expireTime;
-  final BookingStatus bookingStatus;
   final String bikeId;
+
+  final DateTime reservedAt;
+  final DateTime? startTime;
+  final DateTime? endTime;
+
+  final BookingStatus bookingStatus;
 
   Booking({
     required this.bookingId,
     required this.reservedAt,
-    required this.startTime,
-    required this.expireTime,
+    this.startTime,
+    this.endTime,
     required this.bookingStatus,
     required this.bikeId,
   });
+
+  Duration? get duration {
+    if (startTime != null && endTime != null) {
+      return endTime!.difference(startTime!);
+    }
+    return null;
+  }
 }
