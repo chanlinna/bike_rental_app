@@ -12,4 +12,15 @@ class Station {
     required this.longitude,
     required this.bikeCount,
   });
+
+  Station copyWith({int? bikeCount}) {
+    return Station(
+      stationId: stationId,
+      stationName: stationName,
+      latitude: latitude,
+      longitude: longitude,
+      bikeCount: bikeCount ?? this.bikeCount,
+    );
+  }
 }
+
