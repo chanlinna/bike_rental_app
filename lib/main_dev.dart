@@ -1,4 +1,5 @@
 import 'package:provider/provider.dart';
+// import 'dart:html' as html;
 
 import 'main_common.dart';
 
@@ -32,5 +33,14 @@ List<InheritedProvider> get devProviders {
 }
 
 void main() {
+//   // Get the key from the build flag
+//   const apiKey = String.fromEnvironment('MAP_API_KEY');
+
+//   // Manually inject the script tag into the HTML head
+//   final script = html.ScriptElement()
+//     ..src =
+//         'https://maps.googleapis.com/maps/api/js?key=$apiKey&libraries=places'
+//     ..id = 'google-maps-script';
+//   html.querySelector('head')?.append(script);
   mainCommon(devProviders);
 }
