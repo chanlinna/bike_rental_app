@@ -1,23 +1,21 @@
-//ui/theme/theme.dart
-
 import 'package:flutter/material.dart';
 
 // Colors
 
 class AppColors {
-  static const Color primary = Color(0xFF2B638B);
-  static const Color secondary = Color(0xFF51606F);
-  static const Color surface = Color(0xFFF7F9FF);
+  static const Color primary = Color(0xFF376F3B);
+  static const Color secondary = Color(0xFF294E2C);
+  static const Color surface = Color(0xFFF1F2F4);
   static const Color error = Color(0xFFBA1A1A);
   static const Color onPrimary = Color(0xFFFFFFFF);
-  static const Color onSurface = Color(0xFF1A1C1E);
-  static const Color onSurfaceVariant = Color(0xFF51606F);
-  static const Color outline = Color(0xFF71787E);
-  static const Color outlineVariant = Color(0xFFC1C7CE);
-  static const Color background = Color(0xFFFFFFFF);
-  static const Color surfaceVariant = Color(0xFFDDE3EA);
-  static const Color disabled = Color(0xFFB0BEC5);
-  static const Color disabledText = Color(0xFF90A4AE);
+  static const Color onSurface = Color(0xFF141B2D);
+  static const Color onSurfaceVariant = Color(0xFF7D8190);
+  static const Color outline = Color(0xFF4B4B4B);
+  static const Color outlineVariant = Color(0xFFD5D7DC);
+  static const Color background = Color(0xFFF1F2F4);
+  static const Color surfaceVariant = Color(0xFFEDEFF2);
+  static const Color disabled = Color(0xFFB8C0C6);
+  static const Color disabledText = Color(0xFF8F9AA4);
 }
 
 // Text Styles
@@ -117,7 +115,8 @@ ThemeData appTheme = ThemeData(
         return AppColors.primary;
       }),
       foregroundColor: WidgetStateProperty.resolveWith((states) {
-        if (states.contains(WidgetState.disabled)) return AppColors.disabledText;
+        if (states.contains(WidgetState.disabled))
+          return AppColors.disabledText;
         return AppColors.onPrimary;
       }),
       textStyle: WidgetStatePropertyAll(AppTextStyles.labelLarge),
