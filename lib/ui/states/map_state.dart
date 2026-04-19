@@ -81,27 +81,30 @@ class MapState extends ChangeNotifier {
     double minDistance = double.infinity;
 
     for (var station in _allStations) {
-      double dist = LocationUtils.calculateDistance(
-        _currentLocation!,
-        LatLng(station.latitude, station.longitude),
-      );
+      // Only consider stations that actually have available bikes
+      if (station.bikeCount > 0) {
+        double dist = LocationUtils.calculateDistance(
+          _currentLocation!,
+          LatLng(station.latitude, station.longitude),
+        );
 
-      if (dist < minDistance) {
-        minDistance = dist;
-        nearest = station;
+        if (dist < minDistance) {
+          minDistance = dist;
+          nearest = station;
+        }
       }
     }
 
     if (nearest != null) {
-      // Move the camera
       _mapController!.animateCamera(
         CameraUpdate.newLatLngZoom(
           LatLng(nearest.latitude, nearest.longitude),
           17,
         ),
       );
-      // Automatically select it to show the bike list
       selectStation(nearest);
+    } else {
+      debugPrint("No stations with available bikes found.");
     }
   }
 
