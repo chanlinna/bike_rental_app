@@ -48,7 +48,11 @@ class _BikeListScreenState extends State<BikeListScreen> {
                     subtitle: Text("Status: ${bike.bikeStatus.name}"),
                     trailing: ElevatedButton(
                       onPressed: bike.bikeStatus.name == 'available' ? () {
-                        // Logic for booking/renting
+                        Navigator.pushNamed(
+                                context, 
+                                '/booking',
+                                arguments: bike.bikeId,
+                        );
                       } : null,
                       child: const Text("Rent"),
                     ),
