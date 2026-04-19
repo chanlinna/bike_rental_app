@@ -17,6 +17,9 @@ class BookingState extends ChangeNotifier {
 
   BookingState(this._repo);
 
+  bool _wasExpired = false;
+  bool get wasExpired => _wasExpired;
+
   Booking? get currentBooking => _currentBooking;
   int get remainingSeconds => _remainingSeconds;
   Duration get journeyDuration => _journeyDuration;
@@ -38,10 +41,8 @@ class BookingState extends ChangeNotifier {
     return blocks * 0.5;
   }
 
-  // ========================
-  // CREATE BOOKING
-  // ========================
   Future<void> createBooking(String bikeId) async {
+    _wasExpired = false;
     final booking = await _repo.createBooking(bikeId: bikeId);
 
     _currentBooking = booking;
@@ -53,9 +54,6 @@ class BookingState extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ========================
-  // BOOKING TIMER (10 MIN)
-  // ========================
   void _startBookingTimer() {
     _bookingTimer?.cancel();
 
@@ -72,10 +70,8 @@ class BookingState extends ChangeNotifier {
     });
   }
 
-  // ========================
-  // EXPIRE BOOKING
-  // ========================
   Future<void> expireBooking() async {
+    _wasExpired = true;
     if (_currentBooking == null) return;
 
     final expired = Booking(
@@ -95,9 +91,6 @@ class BookingState extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ========================
-  // CANCEL BOOKING
-  // ========================
   Future<void> cancelBooking() async {
     if (_currentBooking == null) return;
 
@@ -117,9 +110,6 @@ class BookingState extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ========================
-  // UNLOCK BIKE → START RIDE
-  // ========================
   Future<void> unlockBike() async {
     if (_currentBooking == null) return;
 
@@ -141,9 +131,6 @@ class BookingState extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ========================
-  // JOURNEY TIMER
-  // ========================
   void _startJourneyTimer() {
     _journeyTimer?.cancel();
 
@@ -158,9 +145,6 @@ class BookingState extends ChangeNotifier {
     });
   }
 
-  // ========================
-  // END JOURNEY
-  // ========================
   Future<void> endJourney() async {
     if (_currentBooking == null) return;
 
@@ -186,6 +170,11 @@ class BookingState extends ChangeNotifier {
   void clearBooking() {
     _currentBooking = null;
     _journeyDuration = Duration.zero;
+    _remainingSeconds = 600;
+
+    _bookingTimer?.cancel();
+    _journeyTimer?.cancel();
+
     notifyListeners();
   }
 }
