@@ -5,13 +5,13 @@ import '../../models/station/station.dart';
 import '../../models/bike/bike.dart';
 import 'package:geolocator/geolocator.dart';
 
-import 'package:google_maps_flutter/google_maps_flutter.dart'; 
-import '../../utils/location_utils.dart'; 
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import '../../utils/location_utils.dart';
 
 class MapState extends ChangeNotifier {
   final StationRepository _repository;
   final BikeRepository _bikeRepository;
-  
+
   List<Station> _allStations = [];
   List<Bike> _stationBikes = [];
   String _searchQuery = "";
@@ -25,7 +25,7 @@ class MapState extends ChangeNotifier {
   bool get isLoading => _isLoading;
   bool get isBikesLoading => _isBikesLoading;
 
-  Station? _selectedStation; 
+  Station? _selectedStation;
   Station? get selectedStation => _selectedStation;
 
   GoogleMapController? _mapController;
@@ -48,7 +48,6 @@ class MapState extends ChangeNotifier {
     }
 
     try {
-
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
         timeLimit: const Duration(seconds: 5),
@@ -108,14 +107,17 @@ class MapState extends ChangeNotifier {
 
   List<Station> get filteredStations {
     if (_searchQuery.isEmpty) return _allStations;
-    return _allStations.where((s) => 
-      s.stationName.toLowerCase().contains(_searchQuery.toLowerCase())
-    ).toList();
+    return _allStations
+        .where(
+          (s) =>
+              s.stationName.toLowerCase().contains(_searchQuery.toLowerCase()),
+        )
+        .toList();
   }
 
   void updateSearch(String query) {
     _searchQuery = query;
-    notifyListeners(); 
+    notifyListeners();
   }
 
   Future<void> fetchStations() async {
@@ -123,29 +125,55 @@ class MapState extends ChangeNotifier {
     notifyListeners();
     try {
       _allStations = await _repository.getAllStations();
+
+      await syncAllStationCounts();
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
-  Future<void> fetchBikesForStation(String stationId) async {
-    _isBikesLoading = true;
-    _stationBikes = [];
-    notifyListeners();
+  Future<void> syncAllStationCounts() async {
+    for (var station in _allStations) {
+      await fetchBikesForStation(station.stationId, silent: true);
+    }
+  }
+
+  Future<void> fetchBikesForStation(
+    String stationId, {
+    bool silent = false,
+  }) async {
+    if (!silent) {
+      _isBikesLoading = true;
+      _stationBikes = [];
+      notifyListeners();
+    }
 
     try {
-      _stationBikes = await _bikeRepository.getBikesByStation(stationId);
+      final bikes = await _bikeRepository.getBikesByStation(stationId);
 
-      if (_selectedStation != null &&
-          _selectedStation!.stationId == stationId) {
-        _selectedStation = _selectedStation!.copyWith(
-          bikeCount: _stationBikes.length, 
+      final availableCount = bikes
+          .where((b) => b.bikeStatus == BikeStatus.available)
+          .length;
+
+      final index = _allStations.indexWhere((s) => s.stationId == stationId);
+      if (index != -1) {
+        _allStations[index] = _allStations[index].copyWith(
+          bikeCount: availableCount, 
         );
       }
+
+      if (_selectedStation?.stationId == stationId) {
+        _stationBikes = bikes;
+        _selectedStation = _allStations[index];
+      }
+    } catch (e) {
+      debugPrint("Error fetching bikes: $e");
     } finally {
-      _isBikesLoading = false;
-      notifyListeners(); 
+      if (!silent) {
+        _isBikesLoading = false;
+        notifyListeners();
+      }
     }
   }
 

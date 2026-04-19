@@ -15,14 +15,10 @@ class StationInfoSheet extends StatelessWidget {
     final theme = Theme.of(context);
     final state = context.watch<MapState>();
 
-    // 1. Calculate the REAL available count
-    // This now recognizes BikeStatus because of the import above
     final realAvailableCount = state.stationBikes
         .where((bike) => bike.bikeStatus == BikeStatus.available)
         .length;
 
-    // 2. Determine display logic
-    // We check if the list is empty to avoid showing 0 while data is still loading
     final bool hasFetchedBikes =
         state.stationBikes.isNotEmpty || !state.isBikesLoading;
     final displayCount = hasFetchedBikes
@@ -63,7 +59,6 @@ class StationInfoSheet extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              // Disable button if no bikes are TRULY available
               onPressed: displayCount > 0
                   ? () => Navigator.pushNamed(
                       context,

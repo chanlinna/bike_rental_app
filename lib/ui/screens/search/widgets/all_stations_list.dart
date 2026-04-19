@@ -3,8 +3,21 @@ import 'package:provider/provider.dart';
 import '../../../states/map_state.dart';
 import './station_list_item.dart';
 
-class AllStationsList extends StatelessWidget {
+class AllStationsList extends StatefulWidget {
   const AllStationsList({super.key});
+
+  @override
+  State<AllStationsList> createState() => _AllStationsListState();
+}
+
+class _AllStationsListState extends State<AllStationsList> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<MapState>().syncAllStationCounts();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
