@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart'; 
+import 'package:provider/provider.dart';
 import '../../../../models/station/station.dart';
-import '../../../states/map_state.dart'; 
+import '../../../../models/bike/bike.dart'; 
+import '../../../states/map_state.dart';
 import '../../../theme/theme.dart';
 
 class StationInfoSheet extends StatelessWidget {
@@ -12,13 +13,21 @@ class StationInfoSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
     final state = context.watch<MapState>();
-    
 
-    final currentStation = (state.selectedStation?.stationId == station.stationId)
-        ? state.selectedStation!
-        : station;
+    // 1. Calculate the REAL available count
+    // This now recognizes BikeStatus because of the import above
+    final realAvailableCount = state.stationBikes
+        .where((bike) => bike.bikeStatus == BikeStatus.available)
+        .length;
+
+    // 2. Determine display logic
+    // We check if the list is empty to avoid showing 0 while data is still loading
+    final bool hasFetchedBikes =
+        state.stationBikes.isNotEmpty || !state.isBikesLoading;
+    final displayCount = hasFetchedBikes
+        ? realAvailableCount
+        : station.bikeCount;
 
     return Container(
       padding: const EdgeInsets.all(AppTextStyles.spaceM),
@@ -27,28 +36,46 @@ class StationInfoSheet extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            currentStation.stationName,
-            style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+            station.stationName,
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: AppTextStyles.spaceXS),
           Row(
             children: [
-              Icon(Icons.pedal_bike, size: 20, color: theme.colorScheme.secondary),
+              Icon(
+                Icons.pedal_bike,
+                size: 20,
+                color: theme.colorScheme.secondary,
+              ),
               const SizedBox(width: AppTextStyles.spaceXS),
-              // Shows a loading indicator or the actual count
-              state.isBikesLoading 
-                ? const SizedBox(height: 10, width: 10, child: CircularProgressIndicator(strokeWidth: 2))
-                : Text('${currentStation.bikeCount} bikes available'),
+              state.isBikesLoading
+                  ? const SizedBox(
+                      height: 10,
+                      width: 10,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Text('$displayCount bikes available'),
             ],
           ),
           const SizedBox(height: AppTextStyles.spaceL),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: currentStation.bikeCount > 0
-                  ? () => Navigator.pushNamed(context, '/bikes', arguments: currentStation)
+              // Disable button if no bikes are TRULY available
+              onPressed: displayCount > 0
+                  ? () => Navigator.pushNamed(
+                      context,
+                      '/bikes',
+                      arguments: station,
+                    )
                   : null,
-              child: const Text('View Available Bikes'),
+              child: Text(
+                displayCount > 0
+                    ? 'View Available Bikes'
+                    : 'No Bikes Available',
+              ),
             ),
           ),
           const SizedBox(height: AppTextStyles.spaceM),
