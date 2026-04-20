@@ -1,3 +1,4 @@
+import 'package:bike_rental_app/ui/theme/theme.dart';
 import 'package:bike_rental_app/ui/widgets/app_button.dart';
 import 'package:flutter/material.dart';
 
@@ -10,7 +11,16 @@ class JourneyEmptyView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Journey")
+        title: Text(
+          'Journey',
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 23,
+            fontWeight: FontWeight.w800,
+            height: 1.1,
+          ).copyWith(color: AppColors.secondary),
+        ),
+        backgroundColor: AppColors.background,
       ),
       body: Container(
         padding: EdgeInsets.symmetric(horizontal: 50),
