@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../models/station/station.dart';
-import '../../../../models/bike/bike.dart'; 
-import '../../../states/map_state.dart';
-import '../view_model/search_view_model.dart';
+import 'package:bike_rental_app/models/station/station.dart';
+import 'package:bike_rental_app/ui/states/map_state.dart';
+import 'package:bike_rental_app/ui/states/station_state.dart';
+import 'package:bike_rental_app/ui/screens/search/view_model/search_view_model.dart';
 
 class StationListItem extends StatelessWidget {
   final Station station;
@@ -12,23 +12,18 @@ class StationListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mapState = context.watch<MapState>();
-    final isSelected = mapState.selectedStation?.stationId == station.stationId;
+    final bool isSelected = context.select<MapState, bool>(
+      (map) => map.selectedStation?.stationId == station.stationId,
+    );
 
-    final updatedStation = mapState.stations.firstWhere(
+    final stationState = context.watch<StationState>();
+
+    final liveStation = stationState.allStations.firstWhere(
       (s) => s.stationId == station.stationId,
       orElse: () => station,
     );
 
-    int displayCount;
-
-    if (isSelected && mapState.stationBikes.isNotEmpty) {
-      displayCount = mapState.stationBikes
-          .where((bike) => bike.bikeStatus == BikeStatus.available)
-          .length;
-    } else {
-      displayCount = updatedStation.bikeCount;
-    }
+    final int displayCount = liveStation.bikeCount;
 
     return ListTile(
       leading: CircleAvatar(
@@ -40,18 +35,17 @@ class StationListItem extends StatelessWidget {
           color: displayCount > 0 ? Colors.green : Colors.red,
         ),
       ),
-      title: Text(updatedStation.stationName),
+      title: Text(
+        liveStation.stationName,
+        style: TextStyle(
+          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+          color: isSelected ? Theme.of(context).primaryColor : Colors.black,
+        ),
+      ),
       subtitle: Text("$displayCount bikes available"),
-      trailing: mapState.isBikesLoading && isSelected
-          ? const SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            )
-          : const Icon(Icons.chevron_right),
+      trailing: const Icon(Icons.chevron_right),
       onTap: () {
-        context.read<SearchViewModel>().selectStation(context, updatedStation);
-        mapState.selectStation(updatedStation);
+        context.read<SearchViewModel>().selectStation(context, liveStation);
       },
     );
   }

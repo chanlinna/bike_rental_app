@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../states/map_state.dart';
+import '../../states/station_state.dart'; 
 import 'view_model/search_view_model.dart';
 import './widgets/all_stations_list.dart';
 import './widgets/search_results_list.dart';
@@ -11,8 +11,6 @@ class SearchScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final searchVM = context.watch<SearchViewModel>();
-    final mapState = context.watch<MapState>();
-    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -47,17 +45,22 @@ class SearchScreen extends StatelessWidget {
       ),
       body: AnimatedSwitcher(
         duration: const Duration(milliseconds: 200),
-        child: _buildSearchContent(searchVM, mapState),
+        child: _buildSearchContent(context, searchVM),
       ),
     );
   }
 
-  Widget _buildSearchContent(SearchViewModel searchVM, MapState mapState) {
+  Widget _buildSearchContent(BuildContext context, SearchViewModel searchVM) {
+    final stationState = context.watch<StationState>();
+
     if (searchVM.mode == SearchMode.allStations) {
       return const AllStationsList(key: ValueKey('all_stations'));
     }
 
-    final filteredResults = searchVM.getFilteredStations(mapState.stations);
+    final filteredResults = searchVM.getFilteredStations(
+      stationState.allStations,
+    );
+
     return SearchResultsList(
       key: const ValueKey('search_results'),
       results: filteredResults,
