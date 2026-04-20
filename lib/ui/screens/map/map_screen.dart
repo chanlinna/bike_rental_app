@@ -42,7 +42,7 @@ class MapScreen extends StatelessWidget {
                   ),
               ],
             ),
-            floatingActionButton: FloatingActionButton(
+            floatingActionButton: FloatingActionButton.extended(
               onPressed: () {
                 if (mapVM.currentLocation != null) {
                   mapVM.findNearestStation(stationState.allStations);
@@ -53,7 +53,11 @@ class MapScreen extends StatelessWidget {
               backgroundColor: mapVM.currentLocation != null
                   ? Colors.blueAccent
                   : Colors.grey,
-              child: const Icon(Icons.near_me, color: Colors.white),
+              icon: const Icon(Icons.near_me, color: Colors.white),
+              label: const Text(
+                "Find Nearest Station",
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           );
         },
