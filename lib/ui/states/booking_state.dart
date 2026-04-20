@@ -17,14 +17,12 @@ class BookingState extends ChangeNotifier {
 
   BookingState(this._repo);
 
-  bool _wasExpired = false;
-  bool get wasExpired => _wasExpired;
-
   Booking? get currentBooking => _currentBooking;
   int get remainingSeconds => _remainingSeconds;
   Duration get journeyDuration => _journeyDuration;
 
-  bool get isExpired => _remainingSeconds <= 0;
+  bool get isExpired =>
+    _currentBooking?.bookingStatus == BookingStatus.cancelled;
   bool get isRiding => _currentBooking?.bookingStatus == BookingStatus.active;
   bool get isFinished => _currentBooking?.bookingStatus == BookingStatus.completed;
 
@@ -39,14 +37,12 @@ class BookingState extends ChangeNotifier {
     if (minutes <= 2) return 0;
 
     final chargeableMinutes = minutes - 2;
-
-    final blocks = (chargeableMinutes / 5).ceil();
-
+    final blocks = chargeableMinutes ~/ 5; 
     return blocks * 0.25;
+
   }
 
   Future<void> createBooking(String bikeId) async {
-    _wasExpired = false;
     final booking = await _repo.createBooking(bikeId: bikeId);
 
     _currentBooking = booking;
@@ -75,7 +71,6 @@ class BookingState extends ChangeNotifier {
   }
 
   Future<void> expireBooking() async {
-    _wasExpired = true;
     if (_currentBooking == null) return;
 
     final expired = Booking(
@@ -88,7 +83,7 @@ class BookingState extends ChangeNotifier {
     await _repo.updateBooking(expired);
     await _repo.markBikeAsAvailable(expired.bikeId);
 
-    _currentBooking = null;
+    _currentBooking = expired; 
 
     _bookingTimer?.cancel();
 
