@@ -16,12 +16,12 @@ class BookingContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final vm = context.watch<BookingViewModel>();
 
-    if (!vm.hasBooking) {
-      return BookingView(bikeId: bikeId);
-    }
-
     if (vm.isExpired) {
       return const BookingExpiredView();
+    }
+
+    if (!vm.hasBooking) {
+      return BookingView(bikeId: bikeId);
     }
 
     if (vm.isReserved) {

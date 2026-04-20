@@ -13,35 +13,71 @@ class BookingTimerView extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Booking"),
+        title: Text(
+          'Booking',
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 23,
+            fontWeight: FontWeight.w800,
+            height: 1.1,
+          ).copyWith(color: AppColors.secondary),
+        ),
         backgroundColor: AppColors.background,
       ),
-      body: Container(
-        padding: AppSpacings.screenPadding,
-        child: Column(
+      body: SafeArea(
+        child: Padding(
+          padding: AppSpacings.screenPadding,
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               AppButton(
                 label: "Unlock Bike",
+                isFullWidth: false,
                 onTap: () async {
                   await vm.unlockBike();
                 },
-                isFullWidth: false,
               ),
 
               Column(
                 children: [
-                  Text(vm.remainingTime, style: const TextStyle(fontSize: 40)),
-                  const Text("You have 10 minutes to unlock the bike"),
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      SizedBox(
+                        width: 140,
+                        height: 140,
+                        child: CircularProgressIndicator(
+                          value: vm.unlockProgress,
+                          strokeWidth: 8,
+                          backgroundColor: AppColors.outlineVariant,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                      Text(
+                        vm.remainingTime,
+                        style: const TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: AppSpacings.m),
+
+                  const Text("You have 10 minutes after booking to unlock the bike"),
                 ],
               ),
-        
-              AppButton(label: "Cancel Booking", type: AppButtonType.danger,
+
+              AppButton(
+                label: "Cancel Booking",
+                type: AppButtonType.danger,
                 onTap: () async {
                   await vm.cancelBooking();
                 },
-              )
+              ),
             ],
+          ),
         ),
       ),
     );
