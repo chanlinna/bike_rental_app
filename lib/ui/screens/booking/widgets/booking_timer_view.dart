@@ -1,5 +1,6 @@
 import 'package:bike_rental_app/ui/theme/theme.dart';
 import 'package:bike_rental_app/ui/widgets/app_button.dart';
+import 'package:bike_rental_app/ui/widgets/bike_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../view_model/booking_view_model.dart';
@@ -30,13 +31,15 @@ class BookingTimerView extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              AppButton(
-                label: "Unlock Bike",
-                isFullWidth: false,
-                onTap: () async {
+              BikeTile(
+                bikeId: vm.booking?.bikeId ?? "",
+                status: "Reserved",
+                type: BikeTileType.unlock,
+                onUnlock: () async {
                   await vm.unlockBike();
                 },
               ),
+
 
               Column(
                 children: [

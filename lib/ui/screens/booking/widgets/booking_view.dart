@@ -1,5 +1,6 @@
 import 'package:bike_rental_app/ui/theme/theme.dart';
 import 'package:bike_rental_app/ui/widgets/app_button.dart';
+import 'package:bike_rental_app/ui/widgets/bike_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../view_model/booking_view_model.dart';
@@ -128,7 +129,12 @@ class BookingView extends StatelessWidget {
         padding: AppSpacings.screenPadding,
         child: Column(
           children: [
-            ListTile(title: Text("Bike ID: $bikeId")),
+            BikeTile(
+              bikeId: bikeId,
+              status: "Available",
+              type: BikeTileType.info,
+            ),
+
 
             const SizedBox(height: AppSpacings.l),
 
