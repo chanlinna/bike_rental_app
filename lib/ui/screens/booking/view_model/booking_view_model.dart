@@ -18,12 +18,17 @@ class BookingViewModel extends ChangeNotifier {
   bool get hasBooking => booking != null;
   bool get isReserved => booking?.bookingStatus == BookingStatus.reserved;
   bool get isActive => booking?.bookingStatus == BookingStatus.active;
-  bool get isExpired => _state.wasExpired;
+  bool get isExpired => _state.isExpired;
 
   String get remainingTime {
     final m = _state.remainingSeconds ~/ 60;
     final s = _state.remainingSeconds % 60;
     return "$m:${s.toString().padLeft(2, '0')}";
+  }
+
+  double get unlockProgress {
+    const total = 600;
+    return _state.remainingSeconds / total;
   }
 
   Future<void> confirmBooking(String bikeId) async {
