@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../models/station/station.dart';
-import '../../../../models/bike/bike.dart'; 
-import '../../../states/map_state.dart';
+import '../../../states/station_state.dart'; 
 import '../../../theme/theme.dart';
 
 class StationInfoSheet extends StatelessWidget {
@@ -13,17 +12,15 @@ class StationInfoSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final state = context.watch<MapState>();
 
-    final realAvailableCount = state.stationBikes
-        .where((bike) => bike.bikeStatus == BikeStatus.available)
-        .length;
+    final stationState = context.watch<StationState>();
 
-    final bool hasFetchedBikes =
-        state.stationBikes.isNotEmpty || !state.isBikesLoading;
-    final displayCount = hasFetchedBikes
-        ? realAvailableCount
-        : station.bikeCount;
+    final liveStation = stationState.allStations.firstWhere(
+      (s) => s.stationId == station.stationId,
+      orElse: () => station,
+    );
+
+    final displayCount = liveStation.bikeCount;
 
     return Container(
       padding: const EdgeInsets.all(AppTextStyles.spaceM),
@@ -32,7 +29,7 @@ class StationInfoSheet extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            station.stationName,
+            liveStation.stationName,
             style: theme.textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
             ),
@@ -46,7 +43,7 @@ class StationInfoSheet extends StatelessWidget {
                 color: theme.colorScheme.secondary,
               ),
               const SizedBox(width: AppTextStyles.spaceXS),
-              state.isBikesLoading
+              stationState.isLoading && stationState.allStations.isEmpty
                   ? const SizedBox(
                       height: 10,
                       width: 10,
@@ -63,7 +60,7 @@ class StationInfoSheet extends StatelessWidget {
                   ? () => Navigator.pushNamed(
                       context,
                       '/bikes',
-                      arguments: station,
+                      arguments: liveStation,
                     )
                   : null,
               child: Text(

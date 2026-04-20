@@ -12,7 +12,8 @@ class BikeMapWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final selectedStation = context.watch<MapState>().selectedStation;
+    final mapVM = context.watch<MapState>();
+    final selectedStation = mapVM.selectedStation;
 
     if (selectedStation != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -22,7 +23,7 @@ class BikeMapWidget extends StatelessWidget {
 
     return GoogleMap(
       onMapCreated: (controller) {
-        context.read<MapState>().onMapCreated(controller);
+        mapVM.onMapCreated(controller);
       },
       initialCameraPosition: const CameraPosition(
         target: LatLng(11.5564, 104.9282),
@@ -38,7 +39,7 @@ class BikeMapWidget extends StatelessWidget {
                 : BitmapDescriptor.hueRed,
           ),
 
-          onTap: () => context.read<MapState>().selectStation(station),
+          onTap: () => mapVM.selectStation(station),
         );
       }).toSet(),
     );
@@ -55,7 +56,7 @@ class BikeMapWidget extends StatelessWidget {
       ),
       builder: (context) => StationInfoSheet(station: station),
     ).whenComplete(() {
-      context.read<MapState>().clearSelectedStation();
+      context.read<MapState>().clearSelection();
     });
   }
 }
