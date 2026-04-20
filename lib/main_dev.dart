@@ -6,9 +6,11 @@ import 'data/repositories/station_repository.dart';
 import 'data/repositories/bike_repository.dart';
 import 'data/repositories/booking/booking_repository.dart';
 import 'data/repositories/booking/booking_repository_firebase.dart';
+import 'package:bike_rental_app/data/repositories/pass/pass_repository.dart';
 
 import 'ui/states/map_state.dart';
 import 'ui/states/booking_state.dart';
+import 'package:bike_rental_app/ui/states/pass_state.dart';
 
 List<InheritedProvider> get devProviders {
   return [
@@ -26,7 +28,11 @@ List<InheritedProvider> get devProviders {
     ),
 
     ChangeNotifierProvider<BookingState>(
-      create: (context) => BookingState(context.read<BookingRepository>()),
+      create: (context) => BookingState(context.read<BookingRepository>()),),
+
+    Provider<PassRepository>(create: (_) => PassRepository()),
+    ChangeNotifierProvider<PassState>(
+      create: (context) => PassState(),
     ),
   ];
 }

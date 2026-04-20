@@ -55,6 +55,12 @@ class _MyAppState extends State<MyApp> {
             ),
           );
         }
+        
+        if (settings.name == '/subscriptions') {
+          return MaterialPageRoute(
+            builder: (context) => const PassScreen(),
+          );
+        }
 
         return null;
       },

@@ -44,6 +44,7 @@ class BookingView extends StatelessWidget {
             AppButton(
               label: "Purchase Pass",
               onTap: () {
+                Navigator.pushNamed(context, '/subscriptions');
               },
               isFullWidth: false,
             ),
