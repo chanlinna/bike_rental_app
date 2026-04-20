@@ -1,3 +1,4 @@
+import 'package:bike_rental_app/ui/widgets/app_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../view_model/journey_view_model.dart';
@@ -21,12 +22,12 @@ class JourneyResultView extends StatelessWidget {
 
           const SizedBox(height: 20),
 
-          ElevatedButton(
-            onPressed: () {
+          AppButton(
+            label: "Back to Map",
+            onTap: () {
               context.read<JourneyViewModel>().clear();
               Navigator.popUntil(context, (r) => r.isFirst);
             },
-            child: const Text("Back to Map"),
           ),
         ],
       ),

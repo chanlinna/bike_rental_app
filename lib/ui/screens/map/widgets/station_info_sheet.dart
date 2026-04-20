@@ -1,3 +1,4 @@
+import 'package:bike_rental_app/ui/screens/bike/bike_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart'; 
 import '../../../../models/station/station.dart';
@@ -46,7 +47,15 @@ class StationInfoSheet extends StatelessWidget {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: currentStation.bikeCount > 0
-                  ? () => Navigator.pushNamed(context, '/bikes', arguments: currentStation)
+                  ? () {
+                     Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              BikeListScreen(station: currentStation),
+                        ),
+                      );
+                    }
                   : null,
               child: const Text('View Available Bikes'),
             ),

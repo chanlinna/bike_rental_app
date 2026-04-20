@@ -7,14 +7,16 @@ import 'journey_active_view.dart';
 import 'journey_result_view.dart';
 
 class JourneyContent extends StatelessWidget {
-  const JourneyContent({super.key});
+  final VoidCallback? onGoToMap;
+
+  const JourneyContent({super.key, this.onGoToMap});
 
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<JourneyViewModel>();
 
     if (!vm.hasActiveJourney && !vm.isFinished) {
-      return const JourneyEmptyView();
+      return JourneyEmptyView(onGoToMap: onGoToMap,);
     }
 
     if (vm.hasActiveJourney) {

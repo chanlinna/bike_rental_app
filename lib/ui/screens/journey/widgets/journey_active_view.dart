@@ -1,3 +1,4 @@
+import 'package:bike_rental_app/ui/widgets/app_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../view_model/journey_view_model.dart';
@@ -18,9 +19,10 @@ class JourneyActiveView extends StatelessWidget {
 
           const SizedBox(height: 20),
 
-          ElevatedButton(
-            onPressed: vm.endJourney,
-            child: const Text("End Trip"),
+          AppButton(
+            label: "End Trip",
+            type: AppButtonType.danger,
+            onTap: vm.endJourney,
           ),
         ],
       ),

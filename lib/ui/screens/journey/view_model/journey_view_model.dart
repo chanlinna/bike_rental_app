@@ -4,7 +4,9 @@ import '../../../states/booking_state.dart';
 class JourneyViewModel extends ChangeNotifier {
   final BookingState _state;
 
-  JourneyViewModel(this._state);
+  JourneyViewModel(this._state) {
+    _state.addListener(notifyListeners);
+  }
 
   bool get hasActiveJourney => _state.isRiding;
   bool get isFinished => _state.isFinished;
@@ -19,11 +21,17 @@ class JourneyViewModel extends ChangeNotifier {
 
   double get price => _state.price;
 
-  void endJourney() {
-    _state.endJourney();
+  Future<void> endJourney() async {
+    await _state.endJourney();
   }
 
   void clear() {
     _state.clearBooking();
+  }
+
+  @override
+  void dispose() {
+    _state.removeListener(notifyListeners);
+    super.dispose();
   }
 }
