@@ -30,7 +30,18 @@ class _BikeListScreenState extends State<BikeListScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text(widget.station.stationName)),
+      appBar: AppBar(
+        title: Text(
+          widget.station.stationName,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 23,
+            fontWeight: FontWeight.w800,
+            height: 1.1,
+          ).copyWith(color: AppColors.secondary),
+        ),
+        backgroundColor: AppColors.background,
+      ),
       body: viewModel.isLoading
           ? const Center(child: CircularProgressIndicator())
           : viewModel.bikes.isEmpty
