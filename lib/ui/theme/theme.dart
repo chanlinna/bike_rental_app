@@ -72,6 +72,31 @@ class AppTextStyles {
   );
 }
 
+//spacing
+class AppSpacings {
+  static const double s = 12;
+  static const double m = 16;
+  static const double l = 24;
+  static const double xl = 32;
+  static const double xxl = 40;
+
+  static const EdgeInsets screenPadding = EdgeInsets.symmetric(horizontal: m);
+
+  static const EdgeInsets cardPadding = EdgeInsets.all(m);
+
+  static const EdgeInsets buttonPadding = EdgeInsets.symmetric(
+    horizontal: l,
+    vertical: s,
+  );
+}
+
+//radius
+class AppRadii {
+  static const BorderRadius small = BorderRadius.all(Radius.circular(8));
+  static const BorderRadius medium = BorderRadius.all(Radius.circular(16));
+  static const BorderRadius large = BorderRadius.all(Radius.circular(24));
+}
+
 // Theme
 
 ThemeData appTheme = ThemeData(
