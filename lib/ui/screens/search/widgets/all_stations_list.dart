@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../states/station_state.dart';
-import './station_list_item.dart';
+import 'package:bike_rental_app/models/station/station.dart';
+import 'package:bike_rental_app/ui/states/station_state.dart';
+import 'package:bike_rental_app/ui/screens/search/widgets/station_list_item.dart';
 
 class AllStationsList extends StatelessWidget {
-  const AllStationsList({super.key});
+  final List<Station> stations;
+
+  const AllStationsList({super.key, required this.stations});
 
   @override
   Widget build(BuildContext context) {
     final bool isLoading = context.select<StationState, bool>(
       (s) => s.isLoading,
     );
-    final int stationCount = context.select<StationState, int>(
-      (s) => s.allStations.length,
-    );
-
-    final stations = context.read<StationState>().allStations;
 
     if (isLoading && stations.isEmpty) {
       return const Center(child: CircularProgressIndicator());

@@ -53,17 +53,18 @@ class SearchScreen extends StatelessWidget {
   Widget _buildSearchContent(BuildContext context, SearchViewModel searchVM) {
     final stationState = context.watch<StationState>();
 
-    if (searchVM.mode == SearchMode.allStations) {
-      return const AllStationsList(key: ValueKey('all_stations'));
-    }
+    final stations = searchVM.getFilteredStations(stationState.allStations);
 
-    final filteredResults = searchVM.getFilteredStations(
-      stationState.allStations,
-    );
+    if (searchVM.mode == SearchMode.allStations) {
+      return AllStationsList(
+        key: const ValueKey('all_stations'),
+        stations: stations,
+      );
+    }
 
     return SearchResultsList(
       key: const ValueKey('search_results'),
-      results: filteredResults,
+      results: stations,
     );
   }
 }

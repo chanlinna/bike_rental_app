@@ -21,13 +21,27 @@ class SearchViewModel extends ChangeNotifier {
   }
 
   List<Station> getFilteredStations(List<Station> allStations) {
-    if (_query.isEmpty) return allStations;
+    List<Station> filtered = _query.isEmpty
+        ? List.from(
+            allStations,
+          ) 
+        : allStations
+              .where(
+                (s) =>
+                    s.stationName.toLowerCase().contains(_query.toLowerCase()),
+              )
+              .toList();
 
-    return allStations
-        .where(
-          (s) => s.stationName.toLowerCase().contains(_query.toLowerCase()),
-        )
-        .toList();
+    // Move zero bike stations to the end
+    filtered.sort((a, b) {
+      if (a.bikeCount > 0 && b.bikeCount == 0) return -1;
+      if (a.bikeCount == 0 && b.bikeCount > 0) return 1;
+
+      // Otherwise, alphabetical order by name
+      return a.stationName.compareTo(b.stationName);
+    });
+
+    return filtered;
   }
 
   void selectStation(BuildContext context, Station station) {
