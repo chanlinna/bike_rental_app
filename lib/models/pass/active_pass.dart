@@ -8,4 +8,8 @@ class ActivePass {
     required this.startDate,
     required this.endDate,
   });
+
+  DateTime get purchasedAt => startDate;
+  DateTime get expiresAt => endDate;
 }
+
