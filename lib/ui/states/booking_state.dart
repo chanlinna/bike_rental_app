@@ -35,10 +35,14 @@ class BookingState extends ChangeNotifier {
 
     final minutes = _journeyDuration.inMinutes;
 
-    // Example: $0.5 per 30 min
-    final blocks = (minutes / 30).ceil();
+    // Free first 2 minutes
+    if (minutes <= 2) return 0;
 
-    return blocks * 0.5;
+    final chargeableMinutes = minutes - 2;
+
+    final blocks = (chargeableMinutes / 5).ceil();
+
+    return blocks * 0.25;
   }
 
   Future<void> createBooking(String bikeId) async {
