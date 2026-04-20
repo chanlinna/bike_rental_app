@@ -12,10 +12,12 @@ class AppColors {
   static const Color onSurfaceVariant = Color(0xFF7D8190);
   static const Color outline = Color(0xFF4B4B4B);
   static const Color outlineVariant = Color(0xFFD5D7DC);
-  static const Color background = Color(0xFFF1F2F4);
+  static const Color background = Color(0xFFFFFFFF);
   static const Color surfaceVariant = Color(0xFFEDEFF2);
   static const Color disabled = Color(0xFFB8C0C6);
   static const Color disabledText = Color(0xFF8F9AA4);
+  static const Color warning = Color(0xFFFFF7E6);
+  static const Color warningText = Color(0xFF8A5A00);
 }
 
 // Text Styles
@@ -80,7 +82,7 @@ class AppSpacings {
   static const double xl = 32;
   static const double xxl = 40;
 
-  static const EdgeInsets screenPadding = EdgeInsets.symmetric(horizontal: m);
+  static const EdgeInsets screenPadding = EdgeInsets.symmetric(horizontal: l, vertical: m);
 
   static const EdgeInsets cardPadding = EdgeInsets.all(m);
 
