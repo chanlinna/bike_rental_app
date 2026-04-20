@@ -6,12 +6,13 @@ import 'ui/screens/map/map_screen.dart';
 import 'ui/screens/journey/journey_screen.dart';
 import 'ui/screens/pass/pass_screen.dart';
 import 'ui/screens/search/view_model/search_view_model.dart';
+import 'ui/screens/bike/view_model/bike_view_model.dart';
 import 'ui/screens/search/search_screen.dart';
 import 'ui/screens/bike/bike_list_screen.dart';
 import 'package:bike_rental_app/ui/screens/booking/booking_screen.dart';
 import 'models/station/station.dart';
+import 'ui/states/map_state.dart';
 
-/// Launch app with injected providers
 void mainCommon(List<InheritedProvider> providers) {
   runApp(MultiProvider(providers: providers, child: const MyApp()));
 }
@@ -43,14 +44,17 @@ class _MyAppState extends State<MyApp> {
           final station = settings.arguments as Station;
 
           return MaterialPageRoute(
-            builder: (_) => BikeListScreen(station: station),
+            builder: (context) => ChangeNotifierProvider(
+              create: (_) => BikeViewModel(context.read()),
+              child: BikeListScreen(station: station),
+            ),
           );
         }
 
         if (settings.name == '/search') {
           return MaterialPageRoute(
-            builder: (_) => ChangeNotifierProvider(
-              create: (_) => SearchViewModel(),
+            builder: (context) => ChangeNotifierProvider(
+              create: (_) => SearchViewModel(context.read<MapState>()),
               child: const SearchScreen(),
             ),
           );
