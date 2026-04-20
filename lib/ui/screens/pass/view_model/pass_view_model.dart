@@ -1,153 +1,64 @@
+import 'package:bike_rental_app/models/pass/active_pass.dart';
 import 'package:flutter/foundation.dart';
+import 'package:bike_rental_app/models/pass/pass.dart';
 
-enum PassViewMode {
-	availablePasses,
-	activePass,
-}
-
-enum PurchaseResult {
-	success,
-	alreadyHasActivePass,
-}
-
-class PassPlan {
-	const PassPlan({
-		required this.name,
-		required this.price,
-		required this.durationLabel,
-		required this.validity,
-	});
-
-	final String name;
-	final String price;
-	final String durationLabel;
-	final Duration validity;
-}
-
-class ActivePass {
-	const ActivePass({
-		required this.plan,
-		required this.purchasedAt,
-		required this.expiresAt,
-	});
-
-	final PassPlan plan;
-	final DateTime purchasedAt;
-	final DateTime expiresAt;
-}
+import 'package:bike_rental_app/ui/states/pass_state.dart';
+export 'package:bike_rental_app/ui/states/pass_state.dart';
+export 'package:bike_rental_app/models/pass/active_pass.dart';
+export 'package:bike_rental_app/models/pass/pass.dart';
 
 class PassViewModel extends ChangeNotifier {
-	PassViewModel({PassViewMode initialMode = PassViewMode.availablePasses})
-		: _mode = initialMode;
-
-	PassViewMode _mode;
-	ActivePass? _activePass;
-
-	static const List<PassPlan> availablePlans = <PassPlan>[
-		PassPlan(
-			name: 'Daily Pass',
-			price: r'$ 15.00',
-			durationLabel: '24 hours',
-			validity: Duration(hours: 24),
-		),
-		PassPlan(
-			name: 'Weekly Pass',
-			price: r'$ 60.00',
-			durationLabel: '7 days',
-			validity: Duration(days: 7),
-		),
-		PassPlan(
-			name: 'Monthly Pass',
-			price: r'$ 120.00',
-			durationLabel: '30 days',
-			validity: Duration(days: 30),
-		),
-	];
-
-	PassViewMode get mode => _mode;
-
-	ActivePass? get activePass {
-		if (_activePass == null) {
-			return null;
-		}
-
-		if (_isExpired(_activePass!)) {
-			_activePass = null;
-			if (_mode == PassViewMode.activePass) {
-				_mode = PassViewMode.availablePasses;
-			}
-			return null;
-		}
-
-		return _activePass;
+	PassViewModel(this._passState) {
+		_passState.addListener(_onPassStateChanged);
 	}
+
+	final PassState _passState;
+
+	static List<Pass> get availablePlans => PassState.availablePlans;
+
+	PassViewMode get mode => _passState.mode;
+
+	ActivePass? get activePass => _passState.activePass;
+
+	Pass? get activePassPlan => _passState.activePassPlan;
 
 	bool get hasActivePass => activePass != null;
 
-	bool get isShowingAvailablePasses => _mode == PassViewMode.availablePasses;
+	bool get isAvailablePasses => _passState.isAvailablePasses;
 
-	bool get isShowingActivePass => _mode == PassViewMode.activePass;
+	bool get isActivePass => _passState.isActivePass;
 
-	PurchaseResult purchase(PassPlan plan) {
-		if (hasActivePass) {
-			return PurchaseResult.alreadyHasActivePass;
-		}
-
-		final DateTime now = DateTime.now();
-		_activePass = ActivePass(
-			plan: plan,
-			purchasedAt: now,
-			expiresAt: now.add(plan.validity),
-		);
-		_mode = PassViewMode.availablePasses;
-		notifyListeners();
-		return PurchaseResult.success;
+	PurchaseResult purchase(Pass plan) {
+		return _passState.purchase(plan);
 	}
 
 	bool cancelActivePass() {
-		if (_activePass == null) {
-			return false;
-		}
-
-		_activePass = null;
-		_mode = PassViewMode.availablePasses;
-		notifyListeners();
-		return true;
+		return _passState.cancelActivePass();
 	}
 
 	void refreshPassStatus() {
-		final ActivePass? current = _activePass;
-		if (current == null) {
-			return;
-		}
-
-		if (_isExpired(current)) {
-			_activePass = null;
-			if (_mode == PassViewMode.activePass) {
-				_mode = PassViewMode.availablePasses;
-			}
-			notifyListeners();
-		}
+		_passState.refreshPassStatus();
 	}
 
 	void setMode(PassViewMode mode) {
-		if (_mode == mode) {
-			return;
-		}
-
-		_mode = mode;
-		notifyListeners();
+		_passState.setMode(mode);
 	}
 
 	void showAvailablePasses() {
-		setMode(PassViewMode.availablePasses);
+		_passState.showAvailablePasses();
 	}
 
 	void showActivePass() {
-		setMode(PassViewMode.activePass);
+		_passState.showActivePass();
 	}
 
-	bool _isExpired(ActivePass pass) {
-		return DateTime.now().isAfter(pass.expiresAt);
+	@override
+	void dispose() {
+		_passState.removeListener(_onPassStateChanged);
+		super.dispose();
+	}
+
+	void _onPassStateChanged() {
+		notifyListeners();
 	}
 }
