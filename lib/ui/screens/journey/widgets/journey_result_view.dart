@@ -1,3 +1,4 @@
+import 'package:bike_rental_app/ui/states/pass_state.dart';
 import 'package:bike_rental_app/ui/theme/theme.dart';
 import 'package:bike_rental_app/ui/widgets/app_button.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ class JourneyResultView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<JourneyViewModel>();
+    final passState = context.watch<PassState>(); 
     final theme = Theme.of(context);
 
     Widget buildRow(
@@ -34,7 +36,7 @@ class JourneyResultView extends StatelessWidget {
             style: isTotal
                 ? theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w700,
-                    fontSize: 20, 
+                    fontSize: 20,
                     color: valueColor ?? AppColors.primary,
                   )
                 : theme.textTheme.bodyMedium,
@@ -55,7 +57,6 @@ class JourneyResultView extends StatelessWidget {
           ).copyWith(color: AppColors.secondary),
         ),
         automaticallyImplyLeading: false,
-        leading: null,
         backgroundColor: AppColors.background,
       ),
       body: Padding(
@@ -73,23 +74,27 @@ class JourneyResultView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   buildRow("Duration", vm.formattedTime),
-                  const SizedBox(height: AppSpacings.s),
-                  buildRow("Base Price (first 2 min)", "\$0.00"),
-                  const SizedBox(height: AppSpacings.s),
-                  buildRow("Rate", "\$0.25 / 5 min"),
-                  const Divider(),
-                  buildRow(
-                    "Total Charged",
-                    "\$${vm.price.toStringAsFixed(2)}",
-                    isTotal: true,
-                    valueColor: AppColors.secondary,
-                  ),
+                  if (!passState.hasActivePass) ...[
+                    const SizedBox(height: AppSpacings.s),
+                    buildRow("Base Price (first 2 min)", "\$0.00"),
+                    const SizedBox(height: AppSpacings.s),
+                    buildRow("Rate", "\$0.25 / 5 min"),
+                    const Divider(),
+                    buildRow(
+                      "Total Charged",
+                      "\$${vm.price.toStringAsFixed(2)}",
+                      isTotal: true,
+                      valueColor: AppColors.secondary,
+                    ),
+                  ]
                 ],
               ),
             ),
             const SizedBox(height: AppSpacings.l),
             AppButton(
-              label: "Confirm Payment",
+              label: passState.hasActivePass
+                  ? "Finish Trip" 
+                  : "Confirm Payment",
               onTap: () {
                 context.read<JourneyViewModel>().clear();
                 Navigator.popUntil(context, (r) => r.isFirst);

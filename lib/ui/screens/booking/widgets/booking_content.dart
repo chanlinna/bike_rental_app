@@ -1,3 +1,5 @@
+import 'package:bike_rental_app/ui/screens/booking/widgets/booking_view_pass.dart';
+import 'package:bike_rental_app/ui/states/pass_state.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../view_model/booking_view_model.dart';
@@ -15,13 +17,18 @@ class BookingContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<BookingViewModel>();
+    final passState = context.watch<PassState>();
 
     if (vm.isExpired) {
       return const BookingExpiredView();
     }
 
     if (!vm.hasBooking) {
-      return BookingView(bikeId: bikeId);
+      if (passState.hasActivePass) {
+        return BookingViewPass(bikeId: bikeId);
+      } else {
+        return BookingView(bikeId: bikeId);
+      }
     }
 
     if (vm.isReserved) {

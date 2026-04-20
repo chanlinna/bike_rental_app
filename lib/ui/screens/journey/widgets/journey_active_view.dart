@@ -1,3 +1,4 @@
+import 'package:bike_rental_app/ui/states/pass_state.dart';
 import 'package:bike_rental_app/ui/theme/theme.dart';
 import 'package:bike_rental_app/ui/widgets/app_button.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ class JourneyActiveView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<JourneyViewModel>();
+    final passState = context.watch<PassState>();
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -53,25 +55,26 @@ class JourneyActiveView extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Current Cost",
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
+                  if (!passState.hasActivePass)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Current Cost",
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
-                      ),
-                      Text(
-                        "\$${vm.price.toStringAsFixed(2)}",
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 22,
-                          color: AppColors.secondary,
+                        Text(
+                          "\$${vm.price.toStringAsFixed(2)}",
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 22,
+                            color: AppColors.secondary,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
                 ],
               ),
             ),
