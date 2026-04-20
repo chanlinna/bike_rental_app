@@ -5,7 +5,9 @@ import '../../../../models/booking/booking.dart';
 class BookingViewModel extends ChangeNotifier {
   final BookingState _state;
 
-  BookingViewModel(this._state);
+  BookingViewModel(this._state) {
+    _state.addListener(notifyListeners);
+  }
 
   bool _isLoading = false;
 
@@ -16,7 +18,7 @@ class BookingViewModel extends ChangeNotifier {
   bool get hasBooking => booking != null;
   bool get isReserved => booking?.bookingStatus == BookingStatus.reserved;
   bool get isActive => booking?.bookingStatus == BookingStatus.active;
-  bool get isExpired => _state.isExpired;
+  bool get isExpired => _state.wasExpired;
 
   String get remainingTime {
     final m = _state.remainingSeconds ~/ 60;
@@ -25,26 +27,30 @@ class BookingViewModel extends ChangeNotifier {
   }
 
   Future<void> confirmBooking(String bikeId) async {
-    if (_isLoading) return; 
+    if (_isLoading) return;
 
     _isLoading = true;
-
     notifyListeners();
 
     try {
       await _state.createBooking(bikeId);
     } finally {
       _isLoading = false;
-
       notifyListeners();
     }
   }
 
-  void cancelBooking() {
-    _state.cancelBooking();
+  Future<void> cancelBooking() async {
+    await _state.cancelBooking();
   }
 
-  void unlockBike() {
-    _state.unlockBike();
+  Future<void> unlockBike() async {
+    await _state.unlockBike();
+  }
+
+  @override
+  void dispose() {
+    _state.removeListener(notifyListeners);
+    super.dispose();
   }
 }

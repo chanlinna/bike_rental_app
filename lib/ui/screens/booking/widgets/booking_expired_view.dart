@@ -1,3 +1,4 @@
+import 'package:bike_rental_app/ui/widgets/app_button.dart';
 import 'package:flutter/material.dart';
 
 class BookingExpiredView extends StatelessWidget {
@@ -5,21 +6,19 @@ class BookingExpiredView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
+    return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text("Time is up"),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.popUntil(context, (r) => r.isFirst);
-              },
-              child: const Text("Back to Map"),
-            ),
+            AppButton(
+            label: "Back to Map",
+            onTap: () {
+              Navigator.popUntil(context, (r) => r.isFirst);
+            },
+          ),
           ],
         ),
-      ),
     );
   }
 }

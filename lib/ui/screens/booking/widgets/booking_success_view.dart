@@ -1,3 +1,5 @@
+import 'package:bike_rental_app/ui/screens/journey/journey_screen.dart';
+import 'package:bike_rental_app/ui/widgets/app_button.dart';
 import 'package:flutter/material.dart';
 
 class BookingSuccessView extends StatelessWidget {
@@ -5,21 +7,22 @@ class BookingSuccessView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
+    return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text("Bike Unlocked!"),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/journey');
-              },
-              child: const Text("Go to Journey"),
-            ),
+            AppButton(
+            label: "Go to Journey",
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const JourneyScreen()),
+              );
+            },
+          ),
           ],
         ),
-      ),
     );
   }
 }

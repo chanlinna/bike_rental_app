@@ -1,3 +1,5 @@
+import 'package:bike_rental_app/ui/theme/theme.dart';
+import 'package:bike_rental_app/ui/widgets/app_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../view_model/booking_view_model.dart';
@@ -10,31 +12,139 @@ class BookingView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vm = context.read<BookingViewModel>();
+    final theme = Theme.of(context);
+
+    Widget buildPurchasePass() {
+      return Container(
+        padding: AppSpacings.cardPadding,
+        decoration: BoxDecoration(
+          color: AppColors.warning,
+          borderRadius: AppRadii.small,
+        ),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.local_offer,
+                  size: 20,
+                  color: theme.colorScheme.primary,
+                ),
+                const SizedBox(width: AppSpacings.s),
+                Text(
+                  'Purchase pass to save cost',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: AppColors.warningText,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacings.m),
+            AppButton(
+              label: "Purchase Pass",
+              onTap: () {
+              },
+              isFullWidth: false,
+            ),
+          ],
+        ),
+      );
+    }
+
+    Widget buildPricing() {
+      return Container(
+        padding: AppSpacings.cardPadding,
+        decoration: BoxDecoration(
+          border: Border.all(color: AppColors.outlineVariant),
+          borderRadius: AppRadii.small,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.receipt, size: 20, color: Colors.black),
+                const SizedBox(width: AppSpacings.m),
+                Text(
+                  "Ticket",
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: AppSpacings.s),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Base price (first 30 min)",
+                  style: theme.textTheme.bodySmall,
+                ),
+                Text("\$1.40", style: theme.textTheme.bodySmall),
+              ],
+            ),
+
+            const SizedBox(height: AppSpacings.s),
+
+            Container(
+              height: 1,
+              decoration: BoxDecoration(
+                color: AppColors.outlineVariant,
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+
+            const SizedBox(height: AppSpacings.s),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Then", style: theme.textTheme.bodySmall),
+                Text(
+                  "\$1.50 / 30 min",
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: AppColors.warningText,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    }
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Booking")),
-      body: Column(
-        children: [
-          ListTile(title: Text("Bike ID: $bikeId")),
+      appBar: AppBar(
+        title: const Text("Booking"),
+        backgroundColor: AppColors.background,
+      ),
+      body: Padding(
+        padding: AppSpacings.screenPadding,
+        child: Column(
+          children: [
+            ListTile(title: Text("Bike ID: $bikeId")),
 
-          const SizedBox(height: 20),
+            const SizedBox(height: AppSpacings.l),
 
-          Container(
-            padding: const EdgeInsets.all(12),
-            color: Colors.orange[100],
-            child: const Text("Buy a pass to save money"),
-          ),
+            buildPurchasePass(),
 
-          const Spacer(),
+            const SizedBox(height: AppSpacings.l),
 
-          ElevatedButton(
-            onPressed: vm.isLoading ? null : () => vm.confirmBooking(bikeId),
+            buildPricing(),
 
-            child: vm.isLoading
-                ? const CircularProgressIndicator()
-                : const Text("Confirm Booking"),
-          ),
-        ],
+            const Spacer(),
+
+            AppButton(
+              label: "Confirm Booking",
+              onTap: vm.isLoading ? null : () => vm.confirmBooking(bikeId),
+            ),
+          ],
+        ),
       ),
     );
   }

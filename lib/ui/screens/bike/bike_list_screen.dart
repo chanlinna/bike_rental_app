@@ -1,3 +1,4 @@
+import 'package:bike_rental_app/ui/screens/booking/booking_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../states/map_state.dart';
@@ -48,11 +49,12 @@ class _BikeListScreenState extends State<BikeListScreen> {
                     subtitle: Text("Status: ${bike.bikeStatus.name}"),
                     trailing: ElevatedButton(
                       onPressed: bike.bikeStatus.name == 'available' ? () {
-                        Navigator.pushNamed(
-                                context, 
-                                '/booking',
-                                arguments: bike.bikeId,
-                        );
+                        Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => BookingScreen(bikeId: bike.bikeId),
+                                ),
+                              );
                       } : null,
                       child: const Text("Rent"),
                     ),
