@@ -9,10 +9,8 @@ class PassScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<PassViewModel>(
-      create: (_) => PassViewModel(context.read<PassState>()),
-      child: Scaffold(
-        body: const PassContent(),
-      ),
+      create: (_) => PassViewModel(context.read<PassState>())..initialize(),
+      child: Scaffold(body: const PassContent()),
     );
   }
 }
