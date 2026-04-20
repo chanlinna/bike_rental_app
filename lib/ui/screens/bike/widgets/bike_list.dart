@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../../../models/station/station.dart';
 import '../../../theme/theme.dart';
 import '../bike_list_screen.dart'; 
+import '../view_model/bike_view_model.dart';
+import 'package:provider/provider.dart';
 
 class StationInfoSheet extends StatelessWidget {
   final Station station;
@@ -35,7 +37,11 @@ class StationInfoSheet extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => BikeListScreen(station: station),
+                    builder: (context) => ChangeNotifierProvider(
+                      // Inject the BikeViewModel and give it the repository from context
+                      create: (context) => BikeViewModel(context.read()),
+                      child: BikeListScreen(station: station),
+                    ),
                   ),
                 );
               } : null,
