@@ -8,57 +8,59 @@ export 'package:bike_rental_app/models/pass/active_pass.dart';
 export 'package:bike_rental_app/models/pass/pass.dart';
 
 class PassViewModel extends ChangeNotifier {
-	PassViewModel(this._passState) {
-		_passState.addListener(_onPassStateChanged);
-	}
+  PassViewModel(this._passState) {
+    _passState.addListener(_onPassStateChanged);
+  }
 
-	final PassState _passState;
+  final PassState _passState;
 
-	static List<Pass> get availablePlans => PassState.availablePlans;
+  List<Pass> get availablePlans => _passState.availablePlans;
+  String? get errorMessage => _passState.errorMessage;
+  ActivePass? get activePass => _passState.activePass;
+  Pass? get activePassPlan => _passState.activePassPlan;
+  bool get isLoading => _passState.isLoading;
+  bool get hasActivePass => activePass != null;
 
-	PassViewMode get mode => _passState.mode;
+  Future<void> loadPassData() {
+    return _passState.loadPassData();
+  }
 
-	ActivePass? get activePass => _passState.activePass;
+  bool _initialized = false;
 
-	Pass? get activePassPlan => _passState.activePassPlan;
+  void initialize() {
+    if (_initialized) {
+      return;
+    }
 
-	bool get hasActivePass => activePass != null;
+    _initialized = true;
+    Future<void>.delayed(Duration.zero, () {
+      loadPassData();
+    });
+  }
 
-	bool get isAvailablePasses => _passState.isAvailablePasses;
+  Future<PurchaseResult> purchase(Pass plan, {DateTime? startDate}) {
+    return _passState.purchase(plan, startDate: startDate);
+  }
 
-	bool get isActivePass => _passState.isActivePass;
+  Future<bool> cancelActivePass() {
+    return _passState.cancelActivePass();
+  }
 
-	PurchaseResult purchase(Pass plan) {
-		return _passState.purchase(plan);
-	}
+  Future<void> refreshPassStatus() {
+    return _passState.refreshPassStatus();
+  }
 
-	bool cancelActivePass() {
-		return _passState.cancelActivePass();
-	}
+  void showAvailablePasses() {
+    _passState.showAvailablePasses();
+  }
 
-	void refreshPassStatus() {
-		_passState.refreshPassStatus();
-	}
+  @override
+  void dispose() {
+    _passState.removeListener(_onPassStateChanged);
+    super.dispose();
+  }
 
-	void setMode(PassViewMode mode) {
-		_passState.setMode(mode);
-	}
-
-	void showAvailablePasses() {
-		_passState.showAvailablePasses();
-	}
-
-	void showActivePass() {
-		_passState.showActivePass();
-	}
-
-	@override
-	void dispose() {
-		_passState.removeListener(_onPassStateChanged);
-		super.dispose();
-	}
-
-	void _onPassStateChanged() {
-		notifyListeners();
-	}
+  void _onPassStateChanged() {
+    notifyListeners();
+  }
 }

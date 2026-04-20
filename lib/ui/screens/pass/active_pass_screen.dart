@@ -52,7 +52,19 @@ class ActivePassScreen extends StatelessWidget {
                 top: false,
                 child: PrimaryButton(
                   text: 'Cancel Current Pass',
-                  callback: () => context.read<PassViewModel>().cancelActivePass(),
+                  callback: () async {
+                    final bool cancelled = await context
+                        .read<PassViewModel>()
+                        .cancelActivePass();
+
+                    if (!cancelled && context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Failed to cancel active pass.'),
+                        ),
+                      );
+                    }
+                  },
                   backgroundColor: AppColors.primary,
                 ),
               ),
