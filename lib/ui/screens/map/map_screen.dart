@@ -1,42 +1,66 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../states/map_state.dart'; 
+import '../../states/station_state.dart'; 
+import '../../states/map_state.dart';
 import 'widgets/bike_map_widget.dart';
 import 'widgets/map_search_bar.dart';
 
-class MapScreen extends StatefulWidget {
+class MapScreen extends StatelessWidget {
   const MapScreen({super.key});
 
   @override
-  State<MapScreen> createState() => _MapScreenState();
-}
-
-class _MapScreenState extends State<MapScreen> {
-  @override
-  void initState() {
-    super.initState();
-    Future.microtask(() => context.read<MapState>().fetchStations());
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final state = context.watch<MapState>();
+    return ChangeNotifierProvider(
+      create: (context) =>
+          MapState(context.read()),
+      child: Consumer2<StationState, MapState>(
+        builder: (context, stationState, mapVM, child) {
+          if (stationState.allStations.isEmpty && !stationState.isLoading) {
+            Future.microtask(() => stationState.fetchStations());
+          }
+          return Scaffold(
+            body: Stack(
+              children: [
+                // Use stationState for the data
+                BikeMapWidget(stations: stationState.allStations),
 
-    return Scaffold(
-      body: Stack(
-        children: [
-          BikeMapWidget(stations: state.filteredStations),
+                const SafeArea(
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: MapSearchBar(),
+                  ),
+                ),
 
-          SafeArea(
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: MapSearchBar(),
+                if (stationState.isLoading && stationState.allStations.isEmpty)
+                  Container(
+                    color: Colors.black.withOpacity(0.3),
+                    child: const Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.blueAccent,
+                      ),
+                    ),
+                  ),
+              ],
             ),
-          ),
-
-          if (state.isLoading && state.stations.isEmpty)
-            const Center(child: CircularProgressIndicator()),
-        ],
+            floatingActionButton: FloatingActionButton.extended(
+              onPressed: () {
+                if (mapVM.currentLocation != null) {
+                  mapVM.findNearestStation(stationState.allStations);
+                } else {
+                  mapVM.determinePosition();
+                }
+              },
+              backgroundColor: mapVM.currentLocation != null
+                  ? Colors.blueAccent
+                  : Colors.grey,
+              icon: const Icon(Icons.near_me, color: Colors.white),
+              label: const Text(
+                "Find Nearest Station",
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          );
+        },
       ),
     );
   }

@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../search/view_model/search_view_model.dart';
+import '../../search/search_screen.dart';
+import '../../../states/map_state.dart';
 
 class MapSearchBar extends StatelessWidget {
   const MapSearchBar({super.key});
@@ -11,7 +15,16 @@ class MapSearchBar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: GestureDetector(
         onTap: () {
-          Navigator.pushNamed(context, '/search');
+          final mapState = context.read<MapState>();
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChangeNotifierProvider(
+                create: (_) => SearchViewModel(mapState),
+                child: const SearchScreen(),
+              ),
+            ),
+          );
         },
         child: Hero(
           tag: 'search_bar', 
