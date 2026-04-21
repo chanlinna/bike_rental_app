@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 
 import 'ui/theme/theme.dart';
 import 'ui/screens/map/map_screen.dart';
-import 'ui/screens/journey/journey_screen.dart';
 import 'ui/screens/pass/pass_screen.dart';
 import 'ui/screens/search/view_model/search_view_model.dart';
 import 'ui/screens/bike/view_model/bike_view_model.dart';
@@ -32,7 +31,7 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  List<Widget> get _pages => [MapScreen(), JourneyScreen(onGoToMap: () => switchTab(0)), PassScreen()];
+  List<Widget> get _pages => [MapScreen(), PassScreen()];
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +77,6 @@ class _MyAppState extends State<MyApp> {
           onTap: switchTab,
           items: const [
             BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Map'),
-            BottomNavigationBarItem(icon: Icon(Icons.route), label: 'Journey'),
             BottomNavigationBarItem(
               icon: Icon(Icons.card_membership),
               label: 'Pass',
