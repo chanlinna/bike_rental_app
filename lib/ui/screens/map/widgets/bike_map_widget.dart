@@ -15,7 +15,7 @@ class BikeMapWidget extends StatelessWidget {
     final mapVM = context.watch<MapState>();
     final selectedStation = mapVM.selectedStation;
 
-    if (stations.isNotEmpty && mapVM.stationIcons.isEmpty) {
+    if (stations.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         mapVM.prepareStationIcons(stations);
       });

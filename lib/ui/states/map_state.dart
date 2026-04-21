@@ -23,16 +23,21 @@ class MapState extends ChangeNotifier {
 
   Map<String, BitmapDescriptor> stationIcons = {};
   String _lastDataHash = "";
+  double _lastScale = -1.0;
 
   Future<void> prepareStationIcons(
     List<Station> stations, {
     double scale = 1.0,
   }) async {
-    final String currentHash =
-        stations.map((s) => "${s.stationId}:${s.bikeCount}").join(",") +
-        "|scale:$scale";
+    final String dataHash = stations
+        .map((s) => "${s.stationId}:${s.bikeCount}")
+        .join(",");
 
-    if (_lastDataHash == currentHash && stationIcons.isNotEmpty) return;
+    if (_lastDataHash == dataHash &&
+        _lastScale == scale &&
+        stationIcons.isNotEmpty) {
+      return;
+    }
 
     final double targetSize = 60.0 * scale;
 
@@ -47,7 +52,8 @@ class MapState extends ChangeNotifier {
           );
     }
 
-    _lastDataHash = currentHash;
+    _lastDataHash = dataHash;
+    _lastScale = scale;
     notifyListeners();
   }
 
