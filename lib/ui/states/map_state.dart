@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../models/station/station.dart';
-import '../../utils/location_utils.dart';
-import '../../data/repositories/bike_repository.dart'; 
+import '../utils/location_utils.dart';
+import '../../data/repositories/bike_repository.dart';
+import '../utils/marker_generator.dart';
 
 class MapState extends ChangeNotifier {
   final BikeRepository _bikeRepository;
@@ -15,8 +16,40 @@ class MapState extends ChangeNotifier {
   MapState(this._bikeRepository) {
     determinePosition();
   }
+
   LatLng? get currentLocation => _currentLocation;
   Station? get selectedStation => _selectedStation;
+  GoogleMapController? get mapController => _mapController;
+
+  Map<String, BitmapDescriptor> stationIcons = {};
+  String _lastDataHash = "";
+
+  Future<void> prepareStationIcons(
+    List<Station> stations, {
+    double scale = 1.0,
+  }) async {
+    final String currentHash =
+        stations.map((s) => "${s.stationId}:${s.bikeCount}").join(",") +
+        "|scale:$scale";
+
+    if (_lastDataHash == currentHash && stationIcons.isNotEmpty) return;
+
+    final double targetSize = 60.0 * scale;
+
+    for (var station in stations) {
+      final color = station.bikeCount > 0 ? Colors.green : Colors.red;
+
+      stationIcons[station.stationId] =
+          await MarkerGenerator.createCustomMarkerBitmap(
+            station.bikeCount,
+            color,
+            targetSize,
+          );
+    }
+
+    _lastDataHash = currentHash;
+    notifyListeners();
+  }
 
   void onMapCreated(GoogleMapController controller) {
     _mapController = controller;
@@ -27,7 +60,6 @@ class MapState extends ChangeNotifier {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
     }
-
     try {
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,

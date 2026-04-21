@@ -15,6 +15,12 @@ class BikeMapWidget extends StatelessWidget {
     final mapVM = context.watch<MapState>();
     final selectedStation = mapVM.selectedStation;
 
+    if (stations.isNotEmpty && mapVM.stationIcons.isEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        mapVM.prepareStationIcons(stations);
+      });
+    }
+
     if (selectedStation != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _showDetails(context, selectedStation);
@@ -22,38 +28,58 @@ class BikeMapWidget extends StatelessWidget {
     }
 
     return GoogleMap(
-      onMapCreated: (controller) {
-        mapVM.onMapCreated(controller);
-      },
+      onMapCreated: (controller) => mapVM.onMapCreated(controller),
       initialCameraPosition: const CameraPosition(
-        target: LatLng(11.5564, 104.9282), 
+        target: LatLng(11.5564, 104.9282),
         zoom: 13,
       ),
+      myLocationEnabled: false,
+      myLocationButtonEnabled: false,
+      onCameraIdle: () async {
+        if (mapVM.mapController == null) return;
+
+        double zoom = await mapVM.mapController!.getZoomLevel();
+        double scale;
+
+        if (zoom < 13) {
+          scale = 0.6;
+        } else if (zoom >= 13 && zoom < 16) {
+          scale = 1.0; 
+        } else {
+          scale = 1.3; 
+        }
+
+        mapVM.prepareStationIcons(stations, scale: scale);
+      },
       markers: {
         ...stations.map((station) {
+          final customIcon = mapVM.stationIcons[station.stationId];
           return Marker(
             markerId: MarkerId(station.stationId),
             position: LatLng(station.latitude, station.longitude),
-            icon: BitmapDescriptor.defaultMarkerWithHue(
-              station.bikeCount > 0
-                  ? BitmapDescriptor.hueGreen
-                  : BitmapDescriptor.hueRed,
-            ),
+            icon:
+                customIcon ??
+                BitmapDescriptor.defaultMarkerWithHue(
+                  station.bikeCount > 0
+                      ? BitmapDescriptor.hueGreen
+                      : BitmapDescriptor.hueRed,
+                ),
             onTap: () => mapVM.selectStation(station),
           );
         }),
 
         if (mapVM.currentLocation != null)
           Marker(
-            markerId: const MarkerId('user_label'),
+            markerId: const MarkerId('user_location_marker'),
             position: mapVM.currentLocation!,
             icon: BitmapDescriptor.defaultMarkerWithHue(
               BitmapDescriptor.hueAzure,
             ),
             infoWindow: const InfoWindow(
               title: "My Location",
-              snippet: "Starting Point",
+              snippet: "You are here",
             ),
+            zIndex: 10,
           ),
       },
       circles: {
@@ -61,11 +87,11 @@ class BikeMapWidget extends StatelessWidget {
           Circle(
             circleId: const CircleId('user_location_circle'),
             center: mapVM.currentLocation!,
-            radius: 50, 
-            fillColor: Colors.blue.withOpacity(0.3),
-            strokeColor: Colors.blueAccent,
+            radius: 50,
+            fillColor: Colors.blue.withOpacity(0.2),
+            strokeColor: Colors.blueAccent.withOpacity(0.5),
             strokeWidth: 2,
-            zIndex: 10,
+            zIndex: 9,
           ),
       },
     );
