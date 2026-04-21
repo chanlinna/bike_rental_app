@@ -10,7 +10,6 @@ class BikeListContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<BikeViewModel>();
-
     if (viewModel.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }

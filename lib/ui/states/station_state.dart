@@ -16,6 +16,13 @@ class StationState extends ChangeNotifier {
   List<Station> get allStations => _allStations;
   bool get isLoading => _isLoading;
 
+  Station getLiveStation(String stationId, Station fallback) {
+    return _allStations.firstWhere(
+      (s) => s.stationId == stationId,
+      orElse: () => fallback,
+    );
+  }
+  
   Future<void> fetchStations() async {
     _isLoading = true;
     notifyListeners();
