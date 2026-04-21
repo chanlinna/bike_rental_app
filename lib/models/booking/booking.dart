@@ -18,11 +18,4 @@ class Booking {
     required this.bookingStatus,
     required this.bikeId,
   });
-
-  Duration? get duration {
-    if (startTime != null && endTime != null) {
-      return endTime!.difference(startTime!);
-    }
-    return null;
-  }
 }
