@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 class ActivePassCardStatic extends StatelessWidget {
   const ActivePassCardStatic({
+    super.key,
     required this.activePass,
     required this.activePlan,
     required this.onExpired,
