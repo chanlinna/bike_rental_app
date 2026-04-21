@@ -26,11 +26,6 @@ class BookingRepositoryFirebase implements BookingRepository {
       body: json.encode(BookingDto.toJson(booking)),
     );
 
-    // DEBUG (keep while developing)
-    print("CREATE BOOKING STATUS: ${response.statusCode}");
-    print("CREATE BOOKING BODY: ${response.body}");
-
-    // Firebase returns 201
     if (response.statusCode != 200 && response.statusCode != 201) {
       throw Exception('Failed to create booking: ${response.body}');
     }
@@ -69,8 +64,6 @@ class BookingRepositoryFirebase implements BookingRepository {
     );
 
     final response = await http.delete(url);
-
-    print("CANCEL BOOKING STATUS: ${response.statusCode}");
 
     if (response.statusCode != 200) {
       throw Exception('Failed to cancel booking: ${response.body}');
