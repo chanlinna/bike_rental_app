@@ -7,7 +7,6 @@ import 'station_info_sheet.dart';
 
 class BikeMapWidget extends StatelessWidget {
   final List<Station> stations;
-
   const BikeMapWidget({super.key, required this.stations});
 
   @override
@@ -35,22 +34,8 @@ class BikeMapWidget extends StatelessWidget {
       ),
       myLocationEnabled: false,
       myLocationButtonEnabled: false,
-      onCameraIdle: () async {
-        if (mapVM.mapController == null) return;
-
-        double zoom = await mapVM.mapController!.getZoomLevel();
-        double scale;
-
-        if (zoom < 13) {
-          scale = 0.6;
-        } else if (zoom >= 13 && zoom < 16) {
-          scale = 1.0; 
-        } else {
-          scale = 1.3; 
-        }
-
-        mapVM.prepareStationIcons(stations, scale: scale);
-      },
+      // JUST CALL THE VIEWMODEL - NO LOGIC HERE
+      onCameraIdle: () => mapVM.handleCameraIdle(stations),
       markers: {
         ...stations.map((station) {
           final customIcon = mapVM.stationIcons[station.stationId];

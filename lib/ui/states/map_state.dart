@@ -21,6 +21,23 @@ class MapState extends ChangeNotifier {
   Station? get selectedStation => _selectedStation;
   GoogleMapController? get mapController => _mapController;
 
+  Future<void> handleCameraIdle(List<Station> stations) async {
+    if (_mapController == null) return;
+
+    double zoom = await _mapController!.getZoomLevel();
+    double scale;
+
+    if (zoom < 13) {
+      scale = 0.6;
+    } else if (zoom >= 13 && zoom < 16) {
+      scale = 1.0;
+    } else {
+      scale = 1.3;
+    }
+
+    await prepareStationIcons(stations, scale: scale);
+  }
+
   Map<String, BitmapDescriptor> stationIcons = {};
   String _lastDataHash = "";
   double _lastScale = -1.0;
