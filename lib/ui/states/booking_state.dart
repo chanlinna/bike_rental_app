@@ -31,13 +31,13 @@ class BookingState extends ChangeNotifier {
       return 0;
     }
 
-    final minutes = _journeyDuration.inMinutes;
+    final seconds = _journeyDuration.inSeconds;
 
     // Free first 2 minutes
-    if (minutes <= 2) return 0;
+    if (seconds <= 120) return 0;
 
-    final chargeableMinutes = minutes - 2;
-    final blocks = chargeableMinutes ~/ 5; 
+    final chargeableSeconds = seconds - 120;
+    final blocks = (chargeableSeconds / 300).ceil();
     return blocks * 0.25;
 
   }
